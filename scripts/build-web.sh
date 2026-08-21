@@ -1,15 +1,20 @@
 #!/bin/bash
 set -e
 
-FLUTTER_VERSION="3.24.3"
+FLUTTER_VERSION="3.47.1"
 FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
 
 echo "=== Installing Flutter ${FLUTTER_VERSION} ==="
-curl -sL "$FLUTTER_URL" | tar xJ -C /tmp
+curl -sL "$FLUTTER_URL" -o /tmp/flutter.tar.xz
+tar xJf /tmp/flutter.tar.xz -C /tmp
 export PATH="/tmp/flutter/bin:$PATH"
 
 echo "=== Flutter version ==="
 flutter --version
+
+echo "=== Disabling analytics ==="
+flutter config --no-analytics
+dart --disable-analytics
 
 echo "=== Getting dependencies ==="
 cd app
