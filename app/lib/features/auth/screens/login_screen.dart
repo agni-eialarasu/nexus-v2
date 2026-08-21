@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/tokens.dart';
-import '../providers/auth_provider.dart';
 
 /// Login screen with email/password and Google OAuth.
-class LoginScreen extends ConsumerStatefulWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLogin = true; // Toggle between login and register
+  bool _isLogin = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -28,26 +27,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    setState(() => _isLoading = true);
 
-    final notifier = ref.read(authNotifierProvider.notifier);
+    // TODO: Connect to Supabase Auth
+    await Future.delayed(const Duration(seconds: 1));
 
-    if (_isLogin) {
-      await notifier.signInWithEmail(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      );
-    } else {
-      await notifier.signUp(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
+    if (mounted) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Auth not yet connected — coming soon!')),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authNotifierProvider);
-    final isLoading = authState is AsyncLoading;
     final width = MediaQuery.sizeOf(context).width;
     final isDesktop = width > NexusTokens.breakpointSm;
 
@@ -125,8 +119,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: isLoading ? null : _submit,
-                          child: isLoading
+                          onPressed: _isLoading ? null : _submit,
+                          child: _isLoading
                               ? const SizedBox(
                                   height: 20,
                                   width: 20,
@@ -143,11 +137,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: NexusTokens.space16),
 
                 // Divider
-                Row(
+                const Row(
                   children: [
-                    const Expanded(child: Divider()),
+                    Expanded(child: Divider()),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                         horizontal: NexusTokens.space16,
                       ),
                       child: Text(
@@ -155,17 +149,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         style: TextStyle(color: NexusTokens.textMuted),
                       ),
                     ),
-                    const Expanded(child: Divider()),
+                    Expanded(child: Divider()),
                   ],
                 ),
                 const SizedBox(height: NexusTokens.space16),
 
                 // Google OAuth
                 OutlinedButton.icon(
-                  onPressed: isLoading
+                  onPressed: _isLoading
                       ? null
-                      : () =>
-                          ref.read(authNotifierProvider.notifier).signInWithGoogle(),
+                      : () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Google OAuth — coming soon!'),
+                            ),
+                          );
+                        },
                   icon: const Icon(Icons.g_mobiledata, size: 24),
                   label: const Text('Continue with Google'),
                 ),
@@ -180,23 +179,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         : 'Already have an account? Sign In',
                   ),
                 ),
-
-                // Error display
-                if (authState is AsyncError)
-                  Padding(
-                    padding: const EdgeInsets.only(top: NexusTokens.space16),
-                    child: Container(
-                      padding: const EdgeInsets.all(NexusTokens.space12),
-                      decoration: BoxDecoration(
-                        color: NexusTokens.danger.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(NexusTokens.radiusSm),
-                      ),
-                      child: Text(
-                        authState.error.toString(),
-                        style: const TextStyle(color: NexusTokens.danger),
-                      ),
-                    ),
-                  ),
               ],
             ),
           ),

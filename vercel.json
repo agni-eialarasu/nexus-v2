@@ -1,0 +1,5 @@
+{
+  "buildCommand": "echo 'Built via GitHub Actions — see .github/workflows/deploy.yml'",
+  "outputDirectory": "app/build/web",
+  "framework": null
+}
