@@ -13,7 +13,7 @@
 ## Branching Strategy
 
 ```
-main (protected) ─── auto-deploys to staging
+main (protected) ─── auto-deploys to GitHub Pages
   │
   ├── sprint/N ─── feature implementation
   │     └── PR → main
@@ -33,12 +33,52 @@ main (protected) ─── auto-deploys to staging
 - Sprint branches for all implementation work
 - Only the developer merges PRs
 
-## CI Pipeline (on every PR)
+## CI/CD Pipeline
 
-1. `flutter analyze` — zero warnings required
-2. `flutter test` — all tests must pass
-3. `dart format --set-exit-if-changed` — consistent formatting
-4. Supabase migration validation
+### CI (on every PR to main)
+
+| Step | Command | Requirement |
+|------|---------|-------------|
+| 1 | `flutter analyze --fatal-infos` | Zero warnings/errors |
+| 2 | `flutter test --coverage` | All tests must pass |
+| 3 | `dart format --set-exit-if-changed lib/ test/` | Consistent formatting |
+
+### Deploy (on push to main)
+
+| Step | Action | Platform |
+|------|--------|----------|
+| 1 | Build Flutter web | GitHub Actions (Flutter 3.47.1) |
+| 2 | Deploy static files | GitHub Pages |
+| 3 | Apply DB migrations | Supabase CLI (manual) |
+| 4 | Deploy Edge Functions | Supabase CLI (manual) |
+
+### Deployment Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Developer pushes to main                                    │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  GitHub Actions (deploy.yml)                                 │
+│  ├── Checkout code                                           │
+│  ├── Install Flutter 3.47.1 (subosito/flutter-action)       │
+│  ├── flutter pub get                                         │
+│  ├── flutter build web --release --base-href /nexus-v2/     │
+│  ├── Upload artifact (app/build/web/)                        │
+│  └── Deploy to GitHub Pages                                  │
+│                                                              │
+│  Live URL: https://agni-eialarasu.github.io/nexus-v2/       │
+│                                                              │
+├─────────────────────────────────────────────────────────────┤
+│  Supabase (manual via CLI after merge)                       │
+│  ├── supabase db push          (apply migrations)           │
+│  └── supabase functions deploy (deploy edge functions)      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Why GitHub Pages (not Vercel)?
+
+Vercel's build environment has a locked Dart SDK (3.5.4) that cannot be overridden via custom scripts. GitHub Actions with `subosito/flutter-action` provides full control over the Flutter SDK version, ensuring consistent builds.
 
 ## Quality Gates per PR
 
@@ -46,7 +86,8 @@ Every feature PR must include:
 - ✅ Unit tests for new models/utilities
 - ✅ Widget tests for new UI components
 - ✅ RLS policy tests for new/modified tables
-- ✅ `flutter analyze` clean
+- ✅ `flutter analyze` clean (zero warnings)
+- ✅ `dart format` clean (consistent style)
 - ✅ No hardcoded strings (i18n-ready)
 
 ## Local Development
@@ -64,17 +105,49 @@ cd app && dart run build_runner build --delete-conflicting-outputs
 # Run tests
 cd app && flutter test
 
+# Run analyze
+cd app && flutter analyze --fatal-infos
+
+# Check formatting
+cd app && dart format --set-exit-if-changed lib/ test/
+
 # Apply new migration
 supabase migration new <description>
 # Edit the generated SQL file, then:
 supabase db reset  # Resets local DB with all migrations + seed
 ```
 
-## Deployment
+## Supabase Deployment (Backend)
 
-| Target | Trigger | Platform |
-|--------|---------|----------|
-| Staging | Merge to main | Vercel (auto) |
-| DB Migrations | Merge to main | Supabase CLI (manual or CI) |
-| Edge Functions | Merge to main | Supabase CLI deploy |
-| Production | Release tag | Manual promotion |
+```bash
+# Push database migrations to production
+supabase db push --linked
+
+# Deploy all Edge Functions
+supabase functions deploy setup-tenant
+supabase functions deploy switch-tenant
+
+# Check migration status
+supabase migration list --linked
+```
+
+## Environment Setup
+
+| Environment | Flutter Web | Supabase |
+|-------------|------------|----------|
+| **Local** | `flutter run -d chrome` | `supabase start` (Docker) |
+| **Staging** | GitHub Pages (auto on merge) | Supabase project (linked) |
+| **Production** | TBD (custom domain) | Same Supabase project |
+
+## Useful Commands
+
+```bash
+# View deployment status
+# Go to: https://github.com/agni-eialarasu/nexus-v2/actions
+
+# Manually trigger deploy
+# Go to: Actions → "Deploy to GitHub Pages" → "Run workflow"
+
+# View live site
+# https://agni-eialarasu.github.io/nexus-v2/
+```
