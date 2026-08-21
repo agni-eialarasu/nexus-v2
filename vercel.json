@@ -1,9 +1,5 @@
 {
-  "buildCommand": "bash ./scripts/build-web.sh",
+  "buildCommand": "echo 'Built via GitHub Actions — see .github/workflows/deploy.yml'",
   "outputDirectory": "app/build/web",
-  "installCommand": "echo 'Flutter install handled in build script'",
-  "framework": null,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "framework": null
 }
