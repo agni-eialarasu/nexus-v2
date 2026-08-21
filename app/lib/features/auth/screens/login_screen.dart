@@ -137,11 +137,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: NexusTokens.space16),
 
                 // Divider
-                Row(
+                const Row(
                   children: [
-                    const Expanded(child: Divider()),
+                    Expanded(child: Divider()),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                         horizontal: NexusTokens.space16,
                       ),
                       child: Text(
@@ -149,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(color: NexusTokens.textMuted),
                       ),
                     ),
-                    const Expanded(child: Divider()),
+                    Expanded(child: Divider()),
                   ],
                 ),
                 const SizedBox(height: NexusTokens.space16),
