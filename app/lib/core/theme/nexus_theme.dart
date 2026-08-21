@@ -4,9 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'tokens.dart';
 
 /// Nexus design system theme.
-///
-/// Minimal, flat, enterprise-friendly. White surfaces, hairline borders,
-/// accent blue, generous whitespace.
 class NexusTheme {
   NexusTheme._();
 
@@ -51,7 +48,7 @@ class NexusTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(NexusTokens.radiusSm),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
