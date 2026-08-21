@@ -35,7 +35,7 @@ class NexusTheme {
             isLight ? NexusTokens.surfaceLight : NexusTokens.surfaceDark,
         foregroundColor: isLight ? NexusTokens.textPrimary : Colors.white,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: const BorderRadius.all(Radius.circular(NexusTokens.radiusMd)),
