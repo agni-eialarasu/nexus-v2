@@ -18,7 +18,7 @@ Built with Flutter (Web) + Supabase.
 | Auth | Supabase Auth (email/password, Google OAuth) |
 | RBAC | Role-based access control with view modes |
 | Deployment | GitHub Pages (staging) + Vercel (production) + Supabase CLI (backend) |
-| CI/CD | GitHub Actions (Flutter 3.47.1) |
+| CI/CD | GitHub Actions (Flutter 3.47.2) |
 
 ## Repository Structure
 

@@ -10,7 +10,7 @@ changes. For the product scope and success criteria see
 
 ## 1. Prerequisites
 
-- **Flutter SDK 3.47+** (`flutter --version`). CI pins **3.47.1** — match it locally to avoid surprises.
+- **Flutter SDK 3.47+** (`flutter --version`). CI pins **3.47.2** — match it locally to avoid surprises. Homebrew: `brew install --cask flutter` (bundles Dart; don't install a separate `dart` formula).
 - **Supabase CLI** (`supabase --version`) + **Docker** (for local backend).
 - **Node.js 20+** (for Supabase Edge Functions local dev and the Vercel CLI).
 
