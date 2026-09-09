@@ -26,7 +26,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
     setState(() => _isLoading = true);
 
     // TODO: Connect to Supabase Auth
@@ -90,8 +92,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Email required';
-                          if (!v.contains('@')) return 'Invalid email';
+                          if (v == null || v.isEmpty) {
+                            return 'Email required';
+                          }
+                          if (!v.contains('@')) {
+                            return 'Invalid email';
+                          }
                           return null;
                         },
                       ),
@@ -104,8 +110,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         obscureText: true,
                         validator: (v) {
-                          if (v == null || v.isEmpty)
+                          if (v == null || v.isEmpty) {
                             return 'Password required';
+                          }
                           if (v.length < AppConstants.minPasswordLength) {
                             return 'Minimum ${AppConstants.minPasswordLength} characters';
                           }
