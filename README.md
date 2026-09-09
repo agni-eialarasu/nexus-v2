@@ -17,8 +17,8 @@ Built with Flutter (Web) + Supabase.
 | Multi-tenancy | Shared schema + RLS + JWT claims |
 | Auth | Supabase Auth (email/password, Google OAuth) |
 | RBAC | Role-based access control with view modes |
-| Deployment | GitHub Pages (web) + Supabase CLI (backend) |
-| CI/CD | GitHub Actions (Flutter 3.47.1) |
+| Deployment | GitHub Pages (staging) + Vercel (production) + Supabase CLI (backend) |
+| CI/CD | GitHub Actions (Flutter 3.47.2) |
 
 ## Repository Structure
 
@@ -43,8 +43,9 @@ nexus-v2/
 │   └── config.toml        # Supabase project config
 ├── docs/                  # Project documentation
 ├── .github/workflows/     # CI/CD pipelines
-│   ├── ci.yml             # PR checks (analyze, test, format)
-│   └── deploy.yml         # Build & deploy to GitHub Pages
+│   ├── ci.yml                   # PR checks (analyze, test, format)
+│   ├── deploy-staging.yml       # main → GitHub Pages (staging)
+│   └── deploy-production.yml    # prod → Vercel (production, inactive)
 ├── .kiro/steering/        # Kiro AI steering rules
 └── README.md
 ```
@@ -87,17 +88,29 @@ SUPABASE_ANON_KEY=<your-local-anon-key>
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| `ci.yml` | PR to main | Flutter analyze + test + format check |
-| `deploy.yml` | Push to main | Build Flutter web + deploy to GitHub Pages |
+| `ci.yml` | PR/push to `main` | Flutter analyze + test + format check |
+| `deploy-staging.yml` | Push to `main` | Build Flutter web + deploy to GitHub Pages (staging) |
+| `deploy-production.yml` | Push to `prod` | Build in Actions + deploy to Vercel (production) — **inactive until Vercel is set up** |
+
+## Environments
+
+| Environment | Branch | Platform | base-href |
+|-------------|--------|----------|-----------|
+| Staging | `main` | GitHub Pages | `/nexus-v2/` |
+| Production | `prod` | Vercel | `/` |
+
+Config is compiled in via `--dart-define` (`APP_ENV`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`);
+see [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#2-environment-setup).
 
 ## Development Workflow
 
-- **Branching:** `sprint/N` branches → PR to `main`
-- **CI:** Flutter analyze + test on every PR
-- **Deploy:** Merge to `main` → auto-deploys to GitHub Pages
+- **Branching:** `sprint/N` or `feat/` branches → PR to `main` (never push to `main` directly)
+- **CI:** Flutter analyze + test + format on every PR
+- **Deploy:** merge to `main` → staging (GitHub Pages); promote `main` → `prod` → production (Vercel)
 - **Backend:** Supabase migrations + Edge Functions via CLI
 
-See [docs/dev-workflow.md](docs/dev-workflow.md) for full protocol.
+See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for the full guide and
+[CONTRIBUTING.md](CONTRIBUTING.md) for onboarding.
 
 ## License
 

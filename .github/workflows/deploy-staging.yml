@@ -1,0 +1,66 @@
+name: Deploy Staging (GitHub Pages)
+
+# Staging deploy: every push to `main` builds and publishes to GitHub Pages.
+# Served from a subpath, so base-href must be /nexus-v2/.
+# Production deploy (Vercel, served from /) lives in deploy-production.yml.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.2'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Staging build. APP_ENV/Supabase values are injected via --dart-define.
+      # Staging secrets are optional today (no feature reads them yet); wire them
+      # in GitHub Environments (name: staging) when the first Supabase-backed
+      # feature lands. See docs/DEVELOPMENT.md "Environment selection".
+      - name: Build web (staging)
+        run: >
+          flutter build web --release
+          --base-href /nexus-v2/
+          --dart-define=APP_ENV=staging
+          --dart-define=SUPABASE_URL=${{ secrets.STAGING_SUPABASE_URL }}
+          --dart-define=SUPABASE_ANON_KEY=${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: app/build/web
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

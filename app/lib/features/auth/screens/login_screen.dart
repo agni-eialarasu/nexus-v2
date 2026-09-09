@@ -26,7 +26,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
     setState(() => _isLoading = true);
 
     // TODO: Connect to Supabase Auth
@@ -65,17 +67,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 Text(
                   AppConstants.appName,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(context).textTheme.headlineMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: NexusTokens.space4),
                 Text(
                   'Project Portfolio Management',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: NexusTokens.textSecondary,
-                      ),
+                  style: Theme.of(context).textTheme.bodyMedium
+                      ?.copyWith(color: NexusTokens.textSecondary),
                 ),
                 const SizedBox(height: NexusTokens.space40),
 
@@ -92,8 +92,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Email required';
-                          if (!v.contains('@')) return 'Invalid email';
+                          if (v == null || v.isEmpty) {
+                            return 'Email required';
+                          }
+                          if (!v.contains('@')) {
+                            return 'Invalid email';
+                          }
                           return null;
                         },
                       ),
@@ -106,7 +110,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         obscureText: true,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Password required';
+                          if (v == null || v.isEmpty) {
+                            return 'Password required';
+                          }
                           if (v.length < AppConstants.minPasswordLength) {
                             return 'Minimum ${AppConstants.minPasswordLength} characters';
                           }

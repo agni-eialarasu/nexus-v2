@@ -26,20 +26,22 @@ class NexusTheme {
       brightness: brightness,
       colorScheme: colorScheme,
       textTheme: textTheme,
-      scaffoldBackgroundColor:
-          isLight ? NexusTokens.backgroundLight : NexusTokens.backgroundDark,
+      scaffoldBackgroundColor: isLight
+          ? NexusTokens.backgroundLight
+          : NexusTokens.backgroundDark,
       appBarTheme: AppBarTheme(
         elevation: 0,
         scrolledUnderElevation: 0.5,
-        backgroundColor:
-            isLight ? NexusTokens.surfaceLight : NexusTokens.surfaceDark,
+        backgroundColor: isLight
+            ? NexusTokens.surfaceLight
+            : NexusTokens.surfaceDark,
         foregroundColor: isLight ? NexusTokens.textPrimary : Colors.white,
       ),
-      cardTheme: CardThemeData(
+      cardTheme: const CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(NexusTokens.radiusMd)),
-          side: const BorderSide(color: NexusTokens.border, width: 1),
+          borderRadius: BorderRadius.all(Radius.circular(NexusTokens.radiusMd)),
+          side: BorderSide(color: NexusTokens.border, width: 1),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -55,8 +57,10 @@ class NexusTheme {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(NexusTokens.radiusSm),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
       ),
       dividerTheme: const DividerThemeData(
         color: NexusTokens.border,
