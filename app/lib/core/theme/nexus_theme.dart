@@ -35,11 +35,11 @@ class NexusTheme {
             isLight ? NexusTokens.surfaceLight : NexusTokens.surfaceDark,
         foregroundColor: isLight ? NexusTokens.textPrimary : Colors.white,
       ),
-      cardTheme: CardThemeData(
+      cardTheme: const CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(NexusTokens.radiusMd)),
-          side: const BorderSide(color: NexusTokens.border, width: 1),
+          borderRadius: BorderRadius.all(Radius.circular(NexusTokens.radiusMd)),
+          side: BorderSide(color: NexusTokens.border, width: 1),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
