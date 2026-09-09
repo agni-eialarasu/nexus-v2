@@ -43,11 +43,15 @@ Shared code under `app/lib/`:
 
 ## Sprint Protocol
 
-- `/sprint-start` — Create branch, update tracker
-- `/sprint-finish` — Push, create PR, update tracker
-- `/sprint-update` — Post-merge documentation
-- Never push directly to main
-- Developer is sole merge authority
+- `/sprint-start` — Create `sprint/N-<topic>` branch off `main`, update tracker
+- `/sprint-finish` — Push, open PR into `main`, update tracker
+- `/sprint-update` — Post-merge documentation (separate `docs/` branch)
+- `/release-start` / `/release-finish` — Promote `main` → `prod` (staging smoke check → production deploy)
+- Branches: `sprint/`, `feat/`, `fix/`, `docs/`, `refactor/`, `test/`, `chore/` (kebab-case); commits follow Conventional Commits
+- Never push directly to `main`
+- Developer is sole merge authority (the AI never merges its own PR)
+
+See `docs/DEVELOPMENT.md` §8–10 for the full branch/commit/sprint reference.
 
 ## Supabase Rules
 
@@ -55,3 +59,12 @@ Shared code under `app/lib/`:
 - Edge Functions for multi-step operations (tenant setup, role assignment)
 - Realtime subscriptions via StreamProvider
 - All RLS policies must be tested (SQL tests in supabase/tests/)
+
+## Environments & Deploy
+
+- **Staging:** `main` → GitHub Pages (auto), `--base-href /nexus-v2/`
+- **Production:** `prod` → Vercel, `--base-href /` (built in GitHub Actions, handed to Vercel prebuilt)
+- **Config:** compile-time via `--dart-define` (`APP_ENV`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`) resolved in `app/lib/core/config/env.dart`; no runtime dotenv. Local dev uses `--dart-define-from-file=dart_define.local.json` (gitignored)
+- Only the Supabase **anon** key ships in client builds; service-role key stays server-side
+
+See `docs/DEVELOPMENT.md` §5–6 for deploy + secrets detail.

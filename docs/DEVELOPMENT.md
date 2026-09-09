@@ -61,11 +61,12 @@ until the first backend feature lands.
 ```bash
 supabase start        # boots Postgres, Auth, Studio locally (Docker)
 supabase db reset     # applies migrations/*.sql + seed.sql
-supabase status       # prints local URLs + anon/service keys
+supabase status       # prints local URLs + Publishable/Secret keys
 supabase stop
 ```
 
-Get the local `SUPABASE_ANON_KEY` from `supabase status` and put it in
+Get the local `SUPABASE_ANON_KEY` from `supabase status` (on the current CLI
+this is the **Publishable** key, `sb_publishable_...`) and put it in
 `app/dart_define.local.json`. Schema/RLS changes are made by adding a new
 timestamped migration (`supabase migration new <name>`), never by editing an
 applied one.
