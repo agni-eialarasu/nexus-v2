@@ -27,15 +27,16 @@ class Env {
 
   /// Supabase anon (publishable) key. RLS enforces access; never the
   /// service-role key.
-  static const String supabaseAnonKey =
-      String.fromEnvironment('SUPABASE_ANON_KEY');
+  static const String supabaseAnonKey = String.fromEnvironment(
+    'SUPABASE_ANON_KEY',
+  );
 
   /// Parsed [AppEnv]. Unknown values fall back to [AppEnv.local].
   static AppEnv get current => switch (_rawEnv) {
-        'production' => AppEnv.production,
-        'staging' => AppEnv.staging,
-        _ => AppEnv.local,
-      };
+    'production' => AppEnv.production,
+    'staging' => AppEnv.staging,
+    _ => AppEnv.local,
+  };
 
   static bool get isLocal => current == AppEnv.local;
   static bool get isStaging => current == AppEnv.staging;
@@ -49,8 +50,8 @@ class Env {
 
   /// Short human-readable label for banners/badges (e.g. an env indicator).
   static String get label => switch (current) {
-        AppEnv.local => 'LOCAL',
-        AppEnv.staging => 'STAGING',
-        AppEnv.production => 'PRODUCTION',
-      };
+    AppEnv.local => 'LOCAL',
+    AppEnv.staging => 'STAGING',
+    AppEnv.production => 'PRODUCTION',
+  };
 }
