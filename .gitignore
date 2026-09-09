@@ -21,6 +21,13 @@ app/pubspec.lock
 .env
 .env.*
 !.env.example
+!.env.local.example
+!.env.staging.example
+!.env.production.example
+
+# Flutter --dart-define-from-file config (hold real keys — never commit)
+app/dart_define.*.json
+!app/dart_define.*.example.json
 
 # OS
 .DS_Store

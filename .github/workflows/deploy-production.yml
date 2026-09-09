@@ -1,0 +1,85 @@
+name: Deploy Production (Vercel)
+
+# Production deploy: builds Flutter web in GitHub Actions (full SDK control via
+# subosito/flutter-action) and hands the prebuilt static output to Vercel.
+# This deliberately avoids Vercel's native build, whose locked Dart SDK cannot
+# build current Flutter (the original Vercel failure). Served from root, so
+# base-href is / (unlike GitHub Pages staging, which uses /nexus-v2/).
+#
+# ── INACTIVE UNTIL VERCEL IS SET UP ───────────────────────────────────────────
+# The automatic `push: [prod]` trigger is intentionally commented out so this
+# workflow does not run (and fail) before the Vercel project + secrets exist.
+# To activate:
+#   1. Create the Vercel project (framework preset: Other).
+#   2. Add repo secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID.
+#   3. Uncomment the `push: branches: [prod]` trigger below.
+# Until then it can be run manually via "Run workflow" (workflow_dispatch); the
+# preflight step below stops early with a clear message if secrets are missing.
+
+on:
+  # push:
+  #   branches: [prod]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Fail fast with a helpful message if Vercel is not configured yet.
+      - name: Preflight — verify Vercel secrets are present
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          missing=0
+          [ -z "$VERCEL_TOKEN" ] && echo "::error::VERCEL_TOKEN secret is not set" && missing=1
+          [ -z "$VERCEL_ORG_ID" ] && echo "::error::VERCEL_ORG_ID secret is not set" && missing=1
+          [ -z "$VERCEL_PROJECT_ID" ] && echo "::error::VERCEL_PROJECT_ID secret is not set" && missing=1
+          if [ "$missing" -eq 1 ]; then
+            echo "Vercel is not configured yet. See .github/workflows/deploy-production.yml header."
+            exit 1
+          fi
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.1'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Production build. Served from root on Vercel, so base-href is /.
+      - name: Build web (production)
+        run: >
+          flutter build web --release
+          --base-href /
+          --dart-define=APP_ENV=production
+          --dart-define=SUPABASE_URL=${{ secrets.PRODUCTION_SUPABASE_URL }}
+          --dart-define=SUPABASE_ANON_KEY=${{ secrets.PRODUCTION_SUPABASE_ANON_KEY }}
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      # Deploy the prebuilt static output. `vercel deploy --prebuilt` expects a
+      # .vercel/output tree, so instead we point Vercel at build/web as a static
+      # project (vercel.json sets buildCommand to a no-op). --prod promotes to
+      # the production domain.
+      - name: Deploy to Vercel (production)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: vercel deploy build/web --prod --yes --token "$VERCEL_TOKEN"

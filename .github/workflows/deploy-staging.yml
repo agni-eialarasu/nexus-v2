@@ -1,4 +1,8 @@
-name: Deploy to GitHub Pages
+name: Deploy Staging (GitHub Pages)
+
+# Staging deploy: every push to `main` builds and publishes to GitHub Pages.
+# Served from a subpath, so base-href must be /nexus-v2/.
+# Production deploy (Vercel, served from /) lives in deploy-production.yml.
 
 on:
   push:
@@ -33,8 +37,17 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build web
-        run: flutter build web --release --base-href /nexus-v2/
+      # Staging build. APP_ENV/Supabase values are injected via --dart-define.
+      # Staging secrets are optional today (no feature reads them yet); wire them
+      # in GitHub Environments (name: staging) when the first Supabase-backed
+      # feature lands. See docs/DEVELOPMENT.md "Environment selection".
+      - name: Build web (staging)
+        run: >
+          flutter build web --release
+          --base-href /nexus-v2/
+          --dart-define=APP_ENV=staging
+          --dart-define=SUPABASE_URL=${{ secrets.STAGING_SUPABASE_URL }}
+          --dart-define=SUPABASE_ANON_KEY=${{ secrets.STAGING_SUPABASE_ANON_KEY }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
