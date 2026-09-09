@@ -5,8 +5,8 @@ working session (human or AI-assisted) can pick up without re-deriving context.
 Keep it brief; update it at the end of a working session.
 
 > This is a pointer, not a source of truth. Authoritative state lives in
-> [sprint-tracker.md](sprint-tracker.md), [project-plan.md](project-plan.md), and
-> git history.
+> [sprint-tracker.md](sprint-tracker.md), [sprint-backlog.md](sprint-backlog.md),
+> and git history.
 
 ---
 

@@ -30,9 +30,10 @@ precedence of `isOrgAdmin > TenantRole > User overrides`.
 ## 3. MVP Scope (pending BA)
 
 The first feature and MVP cut are **not yet decided**. Candidate capabilities
-are carried from v1 (see [project-plan.md](project-plan.md) backlog): Dashboard,
-Projects, Portfolios, OKRs, Financials, Capacity, RAID, Roadmaps, Timesheets,
-Team Management, Beacon, Discussions, Notifications, Templates, Integrations.
+are carried from v1 and grouped into epics in the
+[Sprint Backlog](sprint-backlog.md): Dashboard, Projects, Portfolios, OKRs,
+Financials, Capacity, RAID, Roadmaps, Timesheets, Team Management, Beacon,
+Discussions, Notifications, Templates, Integrations.
 
 - **In MVP:** _TBD from stakeholder meeting._
 - **Deferred:** _TBD._
