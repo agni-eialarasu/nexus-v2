@@ -38,8 +38,11 @@ enable_signup = true
 double_confirm_changes = true
 enable_confirmations = false
 
+# Google OAuth is not wired yet (the login screen's button is a stub). Kept
+# disabled so `supabase start` does not require GOOGLE_CLIENT_ID/SECRET env vars.
+# To enable: set enabled = true and export those vars (see docs/DEVELOPMENT.md).
 [auth.external.google]
-enabled = true
+enabled = false
 client_id = "env(GOOGLE_CLIENT_ID)"
 secret = "env(GOOGLE_CLIENT_SECRET)"
 redirect_uri = "http://localhost:54321/auth/v1/callback"
